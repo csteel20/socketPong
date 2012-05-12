@@ -1,8 +1,8 @@
-//var lobby = LobbyInstance();
+var lobby = require('./lib/_includes.js');
 
 var app = require('express').createServer()
   , io = require('socket.io').listen(app);
-  
+
 app.listen(80);
 
 app.get('/', function (req, res) {
@@ -10,15 +10,10 @@ app.get('/', function (req, res) {
 });
 
 io.sockets.on('connection', function (socket) {
-	//lobby.addUser(socket.id);
+	lobby.addUser(socket.id);
   	socket.emit('news', {});
 
 });
 
 
 
-
-
-/*  T E S T  G A M E  D A T A  C O D E */
-
-// moved to own file for now ..
