@@ -1,8 +1,26 @@
 {print} = require 'util'
 {spawn} = require 'child_process'
 
+###
+ includeFile ~ Used to Add Files to Source.
+###
+args = ['-cj', './server.js']
+includeFile = (fileBaseName) ->
+  args.push "src/"+fileBaseName+".coffee"
+
+###
+Required Files for Build
+###
+
+includeFile "Lobby"
+includeFile "ServerController"
+
+###
+Build Method(s) for cake console
+###
+
 build = (callback) ->
-  coffee = spawn 'coffee', ['-cj', './derp.js', 'src/Lobby.coffee']
+  coffee = spawn 'coffee', args
   
-task 'build', 'Build lib/ from src/', ->
+task 'build', 'Build server.js from src/', ->
   build()

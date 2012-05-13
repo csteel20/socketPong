@@ -20,7 +20,7 @@ class Lobby
   addUser: (userSocketId) ->
     numberOfWaitingUsers += 1
     currentWaitingUsers.push userSocketId
-    tryToPair  
+    this.tryToPair  
     return true
   
   tryToPair: ->
