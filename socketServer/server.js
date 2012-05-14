@@ -17,10 +17,10 @@
 
 
 (function() {
-  var Lobby, app, io, lobby;
+  var Game, Lobby, app, io, lobby;
 
   Lobby = (function() {
-    var currentWaitingUsers, numberOfWaitingUsers;
+    var currentReadyUsers, currentWaitingUsers, newGameId, numberOfWaitingUsers;
 
     Lobby.name = 'Lobby';
 
@@ -30,41 +30,78 @@
 
     currentWaitingUsers = [];
 
+    currentReadyUsers = [];
+
+    newGameId = 0;
+
     Lobby.prototype.addUser = function(userSocketId) {
       numberOfWaitingUsers += 1;
       currentWaitingUsers.push(userSocketId);
-      this.tryToPair;
-      return true;
+      return this.tryToPair();
     };
 
     Lobby.prototype.tryToPair = function() {
-      if (weShouldPair) {
-        /*
-              PAIR LOGIC HERE
-        */
-
+      if (this.weShouldPair()) {
+        newGameId += 1;
         numberOfWaitingUsers = 0;
+        currentReadyUsers = currentWaitingUsers;
         currentWaitingUsers = [];
-      }
-      return true;
-    };
-
-    Lobby.prototype.weShouldPair = function() {
-      if (numberOfWaitingUsers === 2) {
         return true;
       }
       return false;
     };
 
-    Lobby.prototype.getUsers = function() {
+    Lobby.prototype.weShouldPair = function() {
+      if (numberOfWaitingUsers === 2) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    Lobby.prototype.getWaitingUsers = function() {
       return currentWaitingUsers;
+    };
+
+    Lobby.prototype.getReadyUsers = function() {
+      return currentReadyUsers;
     };
 
     Lobby.prototype.getCount = function() {
       return numberOfWaitingUsers;
     };
 
+    Lobby.prototype.getNewGameId = function() {
+      return newGameId;
+    };
+
     return Lobby;
+
+  })();
+
+  Game = (function() {
+    var gameId, playerOne, playerTwo;
+
+    Game.name = 'Game';
+
+    gameId = 0;
+
+    playerOne = "";
+
+    playerTwo = "";
+
+    function Game(gId, playersArray) {
+      gameId = gId;
+      playerOne = playersArray[0];
+      playerTwo = playersArray[1];
+      return true;
+    }
+
+    Game.prototype.getPlayerOne = function() {
+      return playerOne;
+    };
+
+    return Game;
 
   })();
 
@@ -81,8 +118,12 @@
   });
 
   io.sockets.on('connection', function(socket) {
-    lobby.addUser(socket.id);
-    return socket.emit('news', "connected, your connection id is " + socket.id);
+    var game;
+    if (lobby.addUser(socket.id)) {
+      game = new Game(lobby.getNewGameId, lobby.getReadyUsers());
+      socket.emit('news', lobby.getReadyUsers());
+    }
+    return socket.emit('news', "connected, your connection id is " + socket.id + ".");
   });
 
 }).call(this);

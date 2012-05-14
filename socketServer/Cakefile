@@ -13,6 +13,7 @@ Required Files for Build
 ###
 
 includeFile "Lobby"
+includeFile "Game"
 includeFile "ServerController"
 
 ###

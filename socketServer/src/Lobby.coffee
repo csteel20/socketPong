@@ -16,29 +16,34 @@
 class Lobby
   numberOfWaitingUsers = 0
   currentWaitingUsers = []
+  currentReadyUsers = []
+  newGameId = 0
   
   addUser: (userSocketId) ->
     numberOfWaitingUsers += 1
-    currentWaitingUsers.push userSocketId
-    this.tryToPair  
-    return true
-  
-  tryToPair: ->
-    if weShouldPair
-      ###
-      PAIR LOGIC HERE
-      ###
-      numberOfWaitingUsers = 0
-      currentWaitingUsers = []
-    return true
+    currentWaitingUsers.push(userSocketId)
+    return this.tryToPair()
 
-  weShouldPair: ->
-    if numberOfWaitingUsers == 2
+  tryToPair: ->
+    if this.weShouldPair()
+      newGameId += 1;
+      numberOfWaitingUsers = 0
+      currentReadyUsers = currentWaitingUsers
+      currentWaitingUsers = []
       return true
     return false
+
+  weShouldPair: ->
+    if numberOfWaitingUsers is 2 then return true else return false
     
-  getUsers: ->
+  getWaitingUsers: ->
     return currentWaitingUsers
+  
+  getReadyUsers: ->
+    return currentReadyUsers
   
   getCount: ->
     return numberOfWaitingUsers
+    
+  getNewGameId: ->
+    return newGameId

@@ -10,9 +10,7 @@ app.get('/', (req, res) ->
   res.sendfile(__dirname + '/index.html'))
 
 io.sockets.on('connection', (socket) -> 
-  lobby.addUser(socket.id)
-  socket.emit('news', "connected, your connection id is #{socket.id}"))
-
-
-
-
+  if lobby.addUser(socket.id)
+    game = new Game(lobby.getNewGameId, lobby.getReadyUsers())
+    socket.emit('news', lobby.getReadyUsers())
+  socket.emit('news', "connected, your connection id is #{socket.id}."))
